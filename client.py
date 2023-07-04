@@ -6,12 +6,14 @@ class Client:
         self.dfs = dfs
         self.token = token
 
-    def put(self, token, filename):
+    def put(self, filename, token=None):
+        token = token or self.token
         with open(filename, 'r') as file:
             data = file.read()
         self.dfs.distribute_data(token, filename, data)
 
-    def get(self, token, filename):
+    def get(self, filename, token=None):
+        token = token or self.token
         data = self.dfs.retrieve_data(token, filename)
         if data is None:
             print(f'O arquivo {filename} não foi encontrado.')
@@ -43,13 +45,21 @@ def main():
         if not command:
             continue
 
-        if command[0] == 'put' and len(command) == 3:
-            client.put(command[1], command[2])
-        elif command[0] == 'get' and len(command) > 2:
-            client.get(command[1], command[2])  
+        if command[0] == 'put' and (len(command) == 3 or len(command) == 2):
+            if len(command) == 2:
+                client.put(command[1])
+            else:
+                client.put(command[1], token=command[2])
+        elif command[0] == 'get' and (len(command) == 3 or len(command) == 2):
+            if len(command) == 2:
+                client.get(command[1])
+            else:
+                client.get(command[1], token=command[2])
         elif command[0] == 'ls':
             client.ls()
         elif command[0] == 'exit':
+            client.exit()
+            dfs.close()
             break
         else:
             print(f'Comando desconhecido: {command[0]}')

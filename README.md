@@ -16,8 +16,8 @@ python client.py
 
 Depois de inicializar o client.py, você verá um prompt de comando (>), onde pode inserir os seguintes comandos:
 
-put [token] [filename]: Carrega o conteúdo do arquivo especificado para o sistema.
-get [token] [filename]: Recupera o arquivo especificado do sistema.
+put <filename> [token]: Carrega o conteúdo do arquivo especificado para o sistema.
+get <filename> [token]: Recupera o arquivo especificado do sistema.
 ls: Lista todos os arquivos disponíveis no sistema.
 exit: Fecha o sistema DFS.
 

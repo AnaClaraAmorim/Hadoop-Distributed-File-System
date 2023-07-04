@@ -2,19 +2,21 @@ import unittest
 from distributed import Node, DistributedFileSystem
 import threading
 import socket
+import random
 
 class TestDistributed(unittest.TestCase):
 
     def setUp(self):
         self.token = "test_token"
         self.host = "localhost"
-        self.port = 6000
+        self.port = random.randint(5000, 9999)
         self.node = Node(self.host, self.port, self.token)
 
         self.dfs = DistributedFileSystem()
         self.dfs.add_node(self.node)
 
     def tearDown(self):
+        self.dfs.close()
         self.node.server.close()
 
     def test_store_and_retrieve_data(self):
