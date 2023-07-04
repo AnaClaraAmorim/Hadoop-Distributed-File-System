@@ -37,6 +37,11 @@ class Node(threading.Thread):
                 break
             client, addr = self.server.accept()
             data = client.recv(1024).decode()
+            
+            if data == 'close':
+                client.close()
+                break
+
             received_token, key, value = data.split(':', 2)
             if received_token != self.token:
                 client.send('Invalid token'.encode())
@@ -52,7 +57,8 @@ class Node(threading.Thread):
             else:
                 # Caso contrário, está armazenando dados.
                 self.store_data(key, value)
-                client.send(f'Stored {key}:{value} on {self.host}:{self.port}'.encode())
+                # client.send(f'Stored {key}:{value} on {self.host}:{self.port}'.encode())
+                client.send(f'Stored {key}: on {self.host}:{self.port}'.encode())
             client.close()
 
 class DistributedFileSystem:
@@ -87,3 +93,10 @@ class DistributedFileSystem:
                 data = s.recv(1024).decode()
                 if data != 'Key not found':
                     return data
+    
+    def close(self):
+        for host, port in self.nodes:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((host, port))
+                s.send('close'.encode())
+                s.close()
